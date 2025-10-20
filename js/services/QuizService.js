@@ -35,11 +35,11 @@ export class QuizService {
 
             // Gestion spécifique du rate-limit
             if (response.status === 429) {
-                throw new Error("Trop de requêtes envoyées. Veuillez réessayer dans quelques secondes.");
+                throw new Error("Too many requests. Please wait a moment and try again.");
             }
 
             if (!response.ok) {
-                throw new Error(`Erreur réseau : ${response.status} ${response.statusText}`);
+                throw new Error(`Network error: ${response.status} ${response.statusText}`);
             }
 
             // Transforme les données brutes en objets Question

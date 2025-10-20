@@ -30,6 +30,20 @@ export class Quiz {
         return this.questions[this.currentQuestionIndex];
     }
 
+    /** Passe à la question suivante */
+    nextQuestion() {
+        if (this.currentIndex < this.questions.length - 1) {
+            this.currentIndex++;
+            return true;
+        }
+        return false;
+    }
+
+    /** Revient à la question précédente */
+    previousQuestion() {
+        if (this.currentIndex > 0) this.currentIndex--;
+    }
+
     /**
      * Vérifie la réponse donnée et met à jour le score
      * @param {string} answer - Réponse choisie par l'utilisateur

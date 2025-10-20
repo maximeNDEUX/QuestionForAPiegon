@@ -1,5 +1,3 @@
-// /js/utils/stringify.js
-
 export function decodeHTML(str) {
     if (typeof str !== 'string') return '';
     const entities = {
@@ -10,8 +8,11 @@ export function decodeHTML(str) {
         '&#039;': "'",
         '&apos;': "'",
         '&nbsp;': ' ',
-        // tu peux ajouter d'autres entités courantes si nécessaire
+        '&ocirc;': 'ô',
+        '&eacute;': 'é',
+        '&egrave;': 'è',
+        '&rsquo;': '’',
+        // ajouter d'autres entités si besoin
     };
-    // Remplace toutes les entités par leur équivalent
     return str.replace(/&[a-zA-Z0-9#]+;/g, match => entities[match] || match);
 }
