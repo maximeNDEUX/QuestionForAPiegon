@@ -1,3 +1,5 @@
+// /js/controllers/QuizController.js
+
 import { QuizService } from "../services/QuizService.js";
 import { Quiz } from "../models/Quiz.js";
 
@@ -53,16 +55,6 @@ export class QuizController {
       questionCountInput.addEventListener("input", (event) => {
         this.questionCount = parseInt(event.target.value, 10);
         questionCountLabel.textContent = this.questionCount;
-       
-
-
-
-
-
-
-
-
-
       });
     }
   }
@@ -269,12 +261,8 @@ export class QuizController {
 
   renderQuestion() {
 
-    console.log("appel de renderQuestion()")
-
     const question = this.quiz.getCurrentQuestion();
     if (!question) return;
-
-    console.log("Question courante:", question);
 
     this.titleElement.textContent = question.question;
     const answers = [question.correctAnswer, ...question.incorrectAnswers].sort(
@@ -287,8 +275,7 @@ export class QuizController {
     btn.dataset.answer = answers[index];
 
     // 🧼 Reset du style visuel
-      
-      btn.classList.remove(
+    btn.classList.remove(
       "bg-green-300",
       "bg-red-300",
       "text-white",
@@ -297,23 +284,22 @@ export class QuizController {
       "border-2",
       "border-green-500"
     );
-      if (question.answered) {
-        // Si déjà répondu, désactiver les boutons
-        btn.classList.add("pointer-events-none", "opacity-60");
-        this.answerButtons.forEach((b) => {
-          // Montrer la bonne réponse
-          if (b.dataset.answer === question.correctAnswer) {
-            b.classList.add("border-2", "border-green-500");
-          }
-        });
-      }
-      
-   
+    if (question.answered) {
+      // Si déjà répondu, désactiver les boutons
+      btn.classList.add("pointer-events-none", "opacity-60");
+      this.answerButtons.forEach((b) => {
+        // Montrer la bonne réponse
+        if (b.dataset.answer === question.correctAnswer) {
+          b.classList.add("border-2", "border-green-500");
+        }
+      });
+    }
+
   });
     this.updateNavButtons();
     this.updateProgress();
   }
-  
+
 
 
   updateProgress() {
@@ -336,22 +322,44 @@ export class QuizController {
   }
 }
 
-
   endQuiz() {
-    this.scoreDisplay.textContent = `Quiz completed, final score: ${this.quiz.score} / ${this.quiz.questions.length}`;
+    const modal = document.getElementById("endQuizModal");
+    const finalScore = document.getElementById("finalScore");
+    const bestScore = document.getElementById("bestScore");
+    const restartBtn = document.getElementById("restartQuizBtn");
+    const bestScoreDisplay = document.getElementById("bestScoreDisplay"); // 👈 ton élément du start screen
 
-    // Cache le quiz et réaffiche startScreen après 3s
+    // Met à jour les infos du score final
+    finalScore.textContent = `Final Score: ${this.quiz.score} / ${this.quiz.questions.length}`;
+
+    // Vérifie si nouveau record
+    if (this.quiz.getScore() > this.bestScore) {
+      this.bestScore = this.quiz.getScore();
+
+      // Message dans le modal
+      bestScore.textContent = `New best Score! (${this.bestScore})`;
+
+      // Met à jour l'affichage sur le start screen aussi
+      bestScoreDisplay.textContent = `Best Score: ${this.bestScore}`;
+    } else {
+      bestScore.textContent = `Best score: ${this.bestScore}`;
+      bestScoreDisplay.textContent = `Best Score: ${this.bestScore}`;
+    }
+
+    // Affiche le modal
+    modal.classList.remove("hidden");
+
+    // Cache le quiz
     this.quizContainer.classList.add("hidden");
-    setTimeout(() => {
-      let bestScoreDisplay = document.getElementById("bestScoreDisplay");
-      this.scoreDisplay.classList.add("hidden");
 
-      if (this.quiz.getScore() > this.bestScore) {
-        bestScoreDisplay.innerText = `Best score: ${this.quiz.score}`;
-      }
+    // Quand on clique sur "Rejouer"
+    restartBtn.onclick = () => {
+      modal.classList.add("hidden");
       this.showStartScreen();
-    }, 3000);
+    };
   }
+
+
 
   /**
    * Affiche une erreur critique dans l'élément #error
@@ -376,6 +384,7 @@ export class QuizController {
     // Faire défiler jusqu’à l’erreur pour plus de visibilité
     errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
   }
+
   /**
    * Cache l'erreur critique et réactive le contenu
    */

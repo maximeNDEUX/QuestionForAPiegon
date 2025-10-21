@@ -1,4 +1,4 @@
-// models/Question.js
+// /js/models/Question.js
 
 export class Question {
     constructor({ difficulty, category, question, correct_answer, incorrect_answers }) {

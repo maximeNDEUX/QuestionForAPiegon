@@ -87,7 +87,8 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8">
+    <!-- <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> -->
 
 
       <!-- Error Message -->
@@ -165,10 +166,12 @@
       </section>
 
 
+      <!-- class="flex flex-col justify-center items-center gap-6 hidden width-full max-w-2xl mx-auto min-h-[70vh]" -->
       <!-- Quiz Section -->
       <section
         id="quizContainer"
-        class="flex flex-col justify-center items-center gap-6 hidden width-full max-w-2xl mx-auto min-h-[70vh]"
+        class="flex flex-col justify-center items-center gap-6 hidden width-full bg-white p-8 shadow-md rounded-xl"
+
       >
         <h2
           id="questionTitle"
@@ -177,7 +180,7 @@
           Title of question
         </h2>
         <div
-          class=" wrapper flex flex-wrap justify-center items-center space-x-8 min-w-[50vw] max-w-full"
+          class=" wrapper flex flex-wrap justify-center items-center space-x-8 min-w-[50vw] max-w-full px-4"
         >
           <!-- Question prev -->
           <div class="space-x-8">
@@ -207,25 +210,25 @@
           <div class="grid grid-cols-2 gap-6 flex-grow justify-center items-center max-w-[80vw] ">
             <button
               id="questionAnswerA"
-              class="hover:scale-110 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
+              class="hover:scale-110 px-4 py-3 bg-orange-50 border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
             >
               A.
             </button>
             <button
               id="questionAnswerB"
-              class="min-h-10vh hover:scale-110 hover:bg-gray-500 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
+              class="min-h-10vh hover:scale-110 hover:bg-gray-500 px-4 py-3 bg-orange-50 border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
             >
               B.
             </button>
             <button
               id="questionAnswerC"
-              class="hover:scale-110 hover:bg-gray-500 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
+              class="hover:scale-110 hover:bg-gray-500 px-4 py-3 bg-orange-50 border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
             >
               C.
             </button>
             <button
               id="questionAnswerD"
-              class="hover:scale-110 hover:bg-gray-500 px-4 bg-white py-3 border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
+              class="hover:scale-110 hover:bg-gray-500 px-4 bg-orange-50 py-3 border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
             >
               D.
             </button>
@@ -255,6 +258,15 @@
           </div>
         </div>
 
+        <div>
+        <h2
+          id="scoreDisplay"
+          class="hidden text-center text-2xl font-bold text-gray-800 mb-8"
+        >
+          Score: 0
+        </h2>
+      </div>
+
         <!-- Progress Bar -->
         <div class="w-full">
           <!-- Label avec question courante / total -->
@@ -266,7 +278,7 @@
           <div class="w-full h-3 rounded-full bg-orange-50 shadow-md overflow-hidden">
             <div
               id="quizProgressBar"
-              class="h-3 bg-orange-500 rounded-full transition-all"
+              class="h-3 bg-gradient-to-r from-amber-700 to-orange-500 rounded-full transition-all"
               style="width: 10%;"
             ></div>
           </div>
@@ -277,14 +289,28 @@
       </section>
 
 
-      <div>
-        <h2
-          id="scoreDisplay"
-          class="hidden text-center text-2xl font-bold text-gray-800 mb-8"
-        >
-          Score: 0
-        </h2>
+      <!-- Modal de fin de quiz -->
+      <div
+        id="endQuizModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+      >
+        <div class="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Quiz completed</h2>
+          <p id="finalScore" class="text-lg text-gray-700 mb-2"></p>
+          <p id="bestScore" class="text-sm text-gray-500 mb-4"></p>
+
+          <button
+            id="restartQuizBtn"
+            class="px-4 py-2 bg-orange-600 text-white font-semibold rounded hover:bg-orange-700 transition"
+          >
+            New quiz
+          </button>
+        </div>
       </div>
+
+
+
+      
 
     </main>
 

@@ -1,4 +1,4 @@
-// models/Quiz.js
+// /js/models/Quiz.js
 
 import { Question } from "./Question.js";
 

@@ -1,6 +1,4 @@
-/**
-* Charge les questions depuis l'API OpenTDB
-*/
+// /js/services/QuizService.js
 
 import { Question } from "../models/Question.js";
 
