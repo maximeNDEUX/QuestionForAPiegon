@@ -2,397 +2,250 @@
 
 import { QuizService } from "../services/QuizService.js";
 import { Quiz } from "../models/Quiz.js";
+import { QuizUI } from "../controllers/QuizUI.js";
 
 export class QuizController {
-  constructor() {
-    this.service = new QuizService();
-    this.quiz = null;
-    this.bestScore = 0;
-    this.titleElement = document.getElementById("questionTitle");
-    this.scoreDisplay = document.getElementById("scoreDisplay");
-    this.quizContainer = document.getElementById("quizContainer");
-    this.startScreen = document.getElementById("startScreen");    this.answerButtons = [
-      document.getElementById("questionAnswerA"),
-      document.getElementById("questionAnswerB"),
-      document.getElementById("questionAnswerC"),
-      document.getElementById("questionAnswerD"),
-    ];
-    this.selectedAnswer = null;
-    this.categories = [];
-    this.selectedCategory = null;
-    this.selectedDifficulty = null;
-    this.questionCount = 10;
+    constructor() {
+        this.service = new QuizService();
 
-  }
-  
+        this.quiz = null;
+        this.bestScore = 0;
+        this.titleElement = document.getElementById("questionTitle");
+        this.scoreDisplay = document.getElementById("scoreDisplay");
+        this.quizContainer = document.getElementById("quizContainer");
+        this.startScreen = document.getElementById("startScreen");
+        this.answerButtons = [
+            document.getElementById("questionAnswerA"),
+            document.getElementById("questionAnswerB"),
+            document.getElementById("questionAnswerC"),
+            document.getElementById("questionAnswerD"),
+        ];
 
-  async init() {
-    this.showStartScreen();
-    await this.getCategories();
-    this.showCategories(this.categories);
-    this.showDifficultyButtons();
-    this.setEventsListeners();
-    this.setupAnswerButtons();
-  }
+        this.quizUI = new QuizUI();
 
-  setEventsListeners() {
-    const startBtn = document.getElementById("startBtn");
-    startBtn.addEventListener("click", () => {
-      this.hideStartScreen();
-      this.startNewQuiz();
-    });
-
-    // --- Slider number of questions ---
-    const questionCountInput = document.getElementById("questionCount");
-    const questionCountLabel = document.getElementById("questionCountLabel");
-
-    if (questionCountInput && questionCountLabel) {
-      // Initialisation
-      this.questionCount = parseInt(questionCountInput.value, 10);
-      questionCountLabel.textContent = this.questionCount;
-
-      // Écouteur pour chaque mouvement du slider
-      questionCountInput.addEventListener("input", (event) => {
-        this.questionCount = parseInt(event.target.value, 10);
-        questionCountLabel.textContent = this.questionCount;
-      });
-    }
-  }
-
-
-
-  
-
-  // Affichage startScreen / quizContainer
-  showStartScreen() {
-    this.startScreen.classList.remove("hidden");
-    this.quizContainer.classList.add("hidden");
-    this.scoreDisplay.textContent = "Score: 0";
-  }
-
-  hideStartScreen() {
-    this.startScreen.classList.add("hidden");
-    this.quizContainer.classList.remove("hidden");
-  }
-
-  async startNewQuiz() {
-    try {
-      this.hideCriticalError();
-      const questions = await this.service.loadQuestions(this.questionCount ,this.selectedCategory , this.selectedDifficulty);
-      let scoreDisplay = document.getElementById("scoreDisplay");
-      scoreDisplay.classList.remove("hidden");
-      this.quiz = new Quiz({ questions, difficulty: "all", category: "all" });
-      this.quiz.start();
-      this.renderQuestion();
-    } catch (error) {
-      console.error(error);
-
-      // Afficher le message d'erreur à l'utilisateur
-      this.showCriticalError(error);
-
-      // Retour à l'écran de démarrage
-      this.showStartScreen();
-    }
-  }
-
-  async getCategories() {
-    this.categories = await this.service.loadCategories();
-  }
-
-  showCategories(categories) {
-    const categoryContainer = document.getElementById("quizCategory");
-    categoryContainer.innerHTML = "";
-
-    if (!categories) return;
-
-    categories.forEach((cat) => {
-      // Crée un conteneur pour chaque option
-      const div = document.createElement("div");
-      div.className = "inline-block"; // optionnel, pour bien aligner les boutons
-
-      // Crée l'input radio
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.id = `category-${cat.id}`;
-      input.name = "category"; // même nom pour n’en sélectionner qu’un seul
-      input.value = cat.id;
-      input.className = "hidden peer";
-
-      // Crée le label stylisé
-      const label = document.createElement("label");
-      label.htmlFor = input.id;
-      label.className =
-        "px-6 py-2 rounded-full bg-orange-50 text-gray-700 font-medium shadow-md hover:bg-orange-300 transition-all cursor-pointer peer-checked:bg-orange-700 peer-checked:text-white";
-      label.textContent = cat.name;
-
-      // Event pour définir la catégorie choisie
-      input.addEventListener("change", () => {
-        this.selectedCategory = input.value;
-      });
-
-      // Assemble
-      div.appendChild(input);
-      div.appendChild(label);
-      categoryContainer.appendChild(div);
-    });
-  }
-
-  showDifficultyButtons() {
-    const difficulties = [
-      { value: null, label: "All" },
-      { value: "easy", label: "Easy" },
-      { value: "medium", label: "Medium" },
-      { value: "hard", label: "Hard" },
-    ];
-
-    const container = document.getElementById("difficultyPicker");
-    container.innerHTML = "";
-
-    difficulties.forEach((diff, index) => {
-      const div = document.createElement("div");
-      div.className = "inline-block";
-
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.id = `difficulty-${diff.value}`;
-      input.name = "difficulty";
-      input.value = diff.value;
-      input.className = "hidden peer";
-      if (index === 0) {
-        input.checked = true; // par défaut : "All"
+        this.selectedAnswer = null;
+        this.categories = [];
+        this.selectedCategory = null;
         this.selectedDifficulty = null;
-      }
+        this.questionCount = 10;
+    }
 
-      const label = document.createElement("label");
-      label.htmlFor = input.id;
-      label.className =
-        "px-6 py-2 rounded-full bg-orange-50 text-gray-700 font-medium shadow-md hover:bg-orange-300 transition-all cursor-pointer peer-checked:bg-orange-700 peer-checked:text-white";
-      label.textContent = diff.label;
+    async init() {
+        this.quizUI.showStartScreen();
 
-      // Quand on clique sur un bouton radio → mettre à jour la difficulté
-      input.addEventListener("change", () => {
-        this.selectedDifficulty = diff.value;
-      });
+        await this.getCategories();
 
-      div.appendChild(input);
-      div.appendChild(label);
-      container.appendChild(div);
-    });
-  }
+        this.quizUI.showCategories(this.categories, (selectedId) => {
+            this.selectedCategory = selectedId;
+        });
 
+        this.quizUI.showDifficultyButtons((selectedDiff) => {
+            this.selectedDifficulty = selectedDiff;
+        });
 
+        this.setEventsListeners();
+        this.setupAnswerButtons();
+    }
 
+    setEventsListeners() {
+        const startBtn = document.getElementById("startBtn");
+        startBtn.addEventListener("click", () => {
+            this.quizUI.hideStartScreen();
+            this.startNewQuiz();
+        });
 
- setupAnswerButtons() {
-  this.answerButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (!this.quiz) return;
+        // TODO: Confier ceci dans la vue
+        // --- Slider number of questions ---
+        const questionCountInput = document.getElementById("questionCount");
+        const questionCountLabel =
+            document.getElementById("questionCountLabel");
 
-      const question = this.quiz.getCurrentQuestion();
+        if (questionCountInput && questionCountLabel) {
+            // Initialisation
+            this.questionCount = parseInt(questionCountInput.value, 10);
+            questionCountLabel.textContent = this.questionCount;
 
-      // 🔒 Si déjà répondu, ignorer le clic
-      if (question.answered) {
-        console.log("⚠️ Question déjà répondue, clic ignoré.");
-        return;
-      }
-
-      const selectedAnswer = btn.dataset.answer;
-      const isCorrect = this.quiz.submitAnswer(selectedAnswer);
-
-      // Marquer la question comme répondue
-      question.answered = true;
-
-      // 🎨 Feedback visuel
-      if (isCorrect) {
-        btn.classList.add("bg-green-300", "text-white");
-      } else {
-        btn.classList.add("bg-red-300", "text-white");
-      }
-
-      // 🔒 Désactive tous les boutons pour cette question
-      this.answerButtons.forEach((b) => {
-        b.classList.add("pointer-events-none", "opacity-60");
-
-        // 🔹 Montre la bonne réponse
-        if (b.dataset.answer === question.correctAnswer) {
-          b.classList.add("border-2", "border-green-500");
+            // Écouteur pour chaque mouvement du slider
+            questionCountInput.addEventListener("input", (event) => {
+                this.questionCount = parseInt(event.target.value, 10);
+                questionCountLabel.textContent = this.questionCount;
+            });
         }
-      });
+    }
 
-      // 🧮 Met à jour le score
-      this.scoreDisplay.textContent = `Score: ${this.quiz.score}`;
+    async startNewQuiz() {
+        try {
+            // TODO: Mettre dans le contrôleur de vue
+            this.hideCriticalError();
 
-      // ⏳ Attends un peu avant de passer à la suivante
-      setTimeout(() => {
-        if (this.quiz.nextQuestion()) {
-          this.renderQuestion();
-        } else {
-          this.endQuiz();
+            const questions = await this.service.loadQuestions(
+                this.questionCount,
+                this.selectedCategory,
+                this.selectedDifficulty
+            );
+
+            this.quiz = new Quiz({
+                questions,
+                difficulty: "all",
+                category: "all",
+            });
+            this.quiz.start();
+            this.renderQuestion();
+        } catch (error) {
+            console.error(error);
+
+            // Afficher le message d'erreur à l'utilisateur
+            this.showCriticalError(error);
+
+            // Retour à l'écran de démarrage
+            this.quizUI.showStartScreen();
         }
-      }, 1200);
-    });
-  });
-}
+    }
 
+    async getCategories() {
+        this.categories = await this.service.loadCategories();
+    }
 
-  updateNavButtons() {
-    const nextQuestionBtn = document.getElementById("nextQuestionBtn");
-    if (nextQuestionBtn) {
-      nextQuestionBtn.onclick = () => {
+    setupAnswerButtons() {
+        this.quizUI.setupAnswerButtons((btn) => {
+            if (!this.quiz) return;
+
+            const question = this.quiz.getCurrentQuestion();
+            if (question.answered) return; // déjà répondu
+
+            const selectedAnswer = btn.dataset.answer;
+            question.answered = true;
+
+            // --- Incrémentation du score si bonne réponse ---
+            if (selectedAnswer === question.correctAnswer) {
+                this.quiz.score += 1;
+            }
+
+            // Met à jour le score
+            this.quizUI.updateScore(this.quiz.score);
+
+            // Affiche le feedback via la vue
+            const answers = [
+                question.correctAnswer,
+                ...question.incorrectAnswers,
+            ];
+
+            this.quizUI.showAnswerFeedback(
+                answers,
+                question.correctAnswer,
+                selectedAnswer
+            );
+            // Passe à la suivante après un délai
+            setTimeout(() => {
+                if (this.quiz.nextQuestion()) {
+                    this.renderQuestion();
+                } else {
+                    this.endQuiz();
+                }
+            }, 1200);
+        });
+    }
+
+    /**
+     * 	Met à jour la question courante
+     */
+    renderQuestion() {
+        const question = this.quiz.getCurrentQuestion();
+        if (!question) return;
+
+        this.quizUI.renderQuestion(question);
+
+        this.updateNavButtons();
+        this.updateProgress();
+    }
+
+    /**
+     * 	Met à jour les boutons de navigation
+     */
+    updateNavButtons() {
+        this.quizUI.setupNavButtons(
+            () => {
+                // next
+                if (!this.quiz) return;
+                if (this.quiz.nextQuestion()) {
+                    this.renderQuestion();
+                } else {
+                    this.endQuiz();
+                }
+            },
+            () => {
+                // prev
+                if (!this.quiz) return;
+                this.quiz.previousQuestion();
+                this.renderQuestion();
+            }
+        );
+    }
+
+    /**
+     * 	Met à jour la barre de progression et les labels du quiz
+     */
+    updateProgress() {
         if (!this.quiz) return;
-        if (this.quiz.nextQuestion()) {
-          this.renderQuestion();
-        } else {
-          this.endQuiz();
+
+        const current = this.quiz.currentQuestionIndex + 1; // +1 car index commence à 0
+        const total = this.quiz.questions.length;
+
+        // On délègue la mise à jour à la vue
+        this.quizUI.updateProgress(current, total);
+    }
+
+    /**
+     * 	Termine le quiz en calculant le score final et en mettant à jour le meilleur score.
+     */
+    endQuiz() {
+        const finalScore = `${this.quiz.score} / ${this.quiz.questions.length}`;
+        const isNewRecord = this.quiz.getScore() > this.bestScore;
+
+        if (isNewRecord) {
+            this.bestScore = this.quiz.getScore();
         }
-      };
+
+        this.quizUI.showEndMessage(
+            finalScore,
+            this.bestScore,
+            isNewRecord,
+            () => this.quizUI.showStartScreen() // callback
+        );
     }
 
+    /**
+     * Affiche une erreur critique dans l'élément #error
+     * @param {string|Error} [message] - Message d'erreur personnalisé ou objet Error
+     */
+    showCriticalError(message) {
+        const errorElement = document.getElementById("error");
+        if (!errorElement) return;
 
-    const prevQuestionBtn = document.getElementById("prevQuestionBtn");
-    if (prevQuestionBtn) {
-      prevQuestionBtn.onclick = () => {
-        if (!this.quiz) return;
-        this.quiz.previousQuestion();
-        this.renderQuestion();
-      };
-    }
-  }
+        // Toujours retirer la classe hidden avant d'afficher
+        errorElement.classList.remove("hidden");
 
-  renderQuestion() {
+        // Déterminer le texte à afficher
+        const errorMessage =
+            message instanceof Error
+                ? `Error: ${message.message}`
+                : message || "Critical Error. Please refresh";
 
-    const question = this.quiz.getCurrentQuestion();
-    if (!question) return;
+        // Injecter le message
+        errorElement.textContent = errorMessage;
 
-    this.titleElement.textContent = question.question;
-    const answers = [question.correctAnswer, ...question.incorrectAnswers].sort(
-      () => Math.random() - 0.5
-    );
-
-
-    this.answerButtons.forEach((btn, index) => {
-    btn.textContent = answers[index];
-    btn.dataset.answer = answers[index];
-
-    // 🧼 Reset du style visuel
-    btn.classList.remove(
-      "bg-green-300",
-      "bg-red-300",
-      "text-white",
-      "opacity-60",
-      "pointer-events-none",
-      "border-2",
-      "border-green-500"
-    );
-    if (question.answered) {
-      // Si déjà répondu, désactiver les boutons
-      btn.classList.add("pointer-events-none", "opacity-60");
-      this.answerButtons.forEach((b) => {
-        // Montrer la bonne réponse
-        if (b.dataset.answer === question.correctAnswer) {
-          b.classList.add("border-2", "border-green-500");
-        }
-      });
+        // Faire défiler jusqu’à l’erreur pour plus de visibilité
+        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-  });
-    this.updateNavButtons();
-    this.updateProgress();
-  }
+    /**
+     * Cache l'erreur critique et réactive le contenu
+     */
+    hideCriticalError() {
+        const errorElement = document.getElementById("error");
+        if (!errorElement) return;
 
-
-
-  updateProgress() {
-  if (!this.quiz) return;
-
-  const currentLabel = document.getElementById("currentQuestionNumber");
-  const totalLabel = document.getElementById("totalQuestions");
-  const progressBar = document.getElementById("quizProgressBar");
-
-  if (progressBar && currentLabel && totalLabel) {
-    // +1 car currentQuestionIndex commence à 0
-    const current = this.quiz.currentQuestionIndex + 1;
-    const total = this.quiz.questions.length;
-    const percent = (current / total) * 100;
-
-    progressBar.style.width = `${percent}%`;
-
-    currentLabel.textContent = current;
-    totalLabel.textContent = total;
-  }
-}
-
-  endQuiz() {
-    const modal = document.getElementById("endQuizModal");
-    const finalScore = document.getElementById("finalScore");
-    const bestScore = document.getElementById("bestScore");
-    const restartBtn = document.getElementById("restartQuizBtn");
-    const bestScoreDisplay = document.getElementById("bestScoreDisplay"); // 👈 ton élément du start screen
-
-    // Met à jour les infos du score final
-    finalScore.textContent = `Final Score: ${this.quiz.score} / ${this.quiz.questions.length}`;
-
-    // Vérifie si nouveau record
-    if (this.quiz.getScore() > this.bestScore) {
-      this.bestScore = this.quiz.getScore();
-
-      // Message dans le modal
-      bestScore.textContent = `New best Score! (${this.bestScore})`;
-
-      // Met à jour l'affichage sur le start screen aussi
-      bestScoreDisplay.textContent = `Best Score: ${this.bestScore}`;
-    } else {
-      bestScore.textContent = `Best score: ${this.bestScore}`;
-      bestScoreDisplay.textContent = `Best Score: ${this.bestScore}`;
+        errorElement.classList.add("hidden");
+        errorElement.textContent = ""; // on vide le message précédent
     }
-
-    // Affiche le modal
-    modal.classList.remove("hidden");
-
-    // Cache le quiz
-    this.quizContainer.classList.add("hidden");
-
-    // Quand on clique sur "Rejouer"
-    restartBtn.onclick = () => {
-      modal.classList.add("hidden");
-      this.showStartScreen();
-    };
-  }
-
-
-
-  /**
-   * Affiche une erreur critique dans l'élément #error
-   * @param {string|Error} [message] - Message d'erreur personnalisé ou objet Error
-   */
-  showCriticalError(message) {
-    const errorElement = document.getElementById("error");
-    if (!errorElement) return;
-
-    // Toujours retirer la classe hidden avant d'afficher
-    errorElement.classList.remove("hidden");
-
-    // Déterminer le texte à afficher
-    const errorMessage =
-      message instanceof Error
-        ? `Error: ${message.message}`
-        : message || "Critical Error. Please refresh";
-
-    // Injecter le message
-    errorElement.textContent = errorMessage;
-
-    // Faire défiler jusqu’à l’erreur pour plus de visibilité
-    errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
-  /**
-   * Cache l'erreur critique et réactive le contenu
-   */
-  hideCriticalError() {
-    const errorElement = document.getElementById("error");
-    if (!errorElement) return;
-
-    errorElement.classList.add("hidden");
-    errorElement.textContent = ""; // on vide le message précédent
-  }
 }
