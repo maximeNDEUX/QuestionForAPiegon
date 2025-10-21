@@ -26,7 +26,6 @@ export class Quiz {
      * @returns {Question}
      */
     getCurrentQuestion() {
-        console.log(`getCurrentQuestion ${this.questions[this.currentQuestionIndex]}`)
         return this.questions[this.currentQuestionIndex];
     }
 
@@ -64,6 +63,14 @@ export class Quiz {
 
     getScore() {
         return this.score;
+    }
+
+    getTotalQuestions() {
+        return this.questions.length;
+    }
+
+    getCurrentQuestionNumber() {
+        return this.currentQuestionIndex + 1;
     }
 
 

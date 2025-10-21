@@ -7,5 +7,7 @@ export class Question {
         this.question = question;
         this.correctAnswer = correct_answer;
         this.incorrectAnswers = incorrect_answers;
+        this.answered = false;
+        this.userAnswer = null;
     }
 }

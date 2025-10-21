@@ -13,15 +13,66 @@
     />
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <style></style>
+    <style>
+      /* Track */
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 0.75rem; /* h-3 */
+        background-color: #ffedd5; /* bg-orange-50 */
+        border-radius: 9999px;
+      }
+
+      input[type="range"]::-moz-range-track {
+        height: 0.75rem;
+        background-color: #ffedd5;
+        border-radius: 9999px;
+      }
+
+      /* Thumb */
+      input[type="range"]::-webkit-slider-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: #c2410c;
+        border-radius: 9999px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        cursor: pointer;
+        -webkit-appearance: none;
+
+        /* align thumb vertically to center of track */
+        margin-top: -0.375rem; /* -(trackHeight / 2) = -0.75rem / 2 */
+        transition: background-color 0.2s;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: #c2410c;
+        border-radius: 9999px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        cursor: pointer;
+
+        /* align thumb vertically */
+        transform: translateY(-0.1875rem); /* ajustement fin pour Firefox */
+        transition: background-color 0.2s;
+      }
+
+      /* Hover effect */
+      input[type="range"]:hover::-webkit-slider-thumb {
+        background-color: #ea580c;
+      }
+
+      input[type="range"]:hover::-moz-range-thumb {
+        background-color: #ea580c;
+      }
+
+    </style>
   </head>
   <body
     class="bg-gradient-to-br from-gray-200 via-slate-200 to-orange-300 min-h-screen"
   >
     <!-- Header -->
     <header class="bg-white shadow-md sticky top-0 z-50">
-      <div class="container mx-auto px-6 py-2">
-        <div class="flex justify-center items-center py-2 space-x-3">
+      <div class="container mx-auto px-6 ">
+        <div class="flex justify-center items-center space-x-3">
           <img
             src="./assets/milien.png"
             alt="Mascotte Milien"
@@ -36,98 +87,69 @@
     </header>
 
     <!-- Main Content -->
-<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+
+      <!-- Error Message -->
+      <div
+        id="error"
+        class="hidden bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg max-w-2xl mx-auto mb-8"
+      ></div>
+
       <!-- Ecran d'accueil -->
-      <section class="space-y-12" id="startScreen">
-        
+      <section class="flex flex-col gap-y-12" id="startScreen">
+
         <!-- Difficulty radios -->
         <div>
           <h2
-            class="text-center text-2xl pb-4 text-gray-800 font-semibold mb-4"
+            class="text-[#0b0e44] text-center text-2xl pb-4 font-semibold mb-4"
           >
             Choose difficulty
           </h2>
 
           <div
-            class="flex flex-wrap justify-center gap-8 mb-8"
+            class="flex flex-wrap justify-center gap-8 pb-3"
             id="difficultyPicker"
           >
-            <div>
-              <input
-                type="radio"
-                id="difficultyAll"
-                name="difficulty"
-                value="all"
-                class="hidden peer"
-                checked
-              />
-              <label
-                for="difficultyAll"
-                class="px-6 py-2 rounded-full bg-orange-50 text-gray-700 font-medium shadow-md hover:bg-orange-300 transition-all cursor-pointer peer-checked:bg-orange-700 peer-checked:text-white"
-              >
-                All
-              </label>
-            </div>
-
-            <div>
-              <input
-                type="radio"
-                id="difficultyEasy"
-                name="difficulty"
-                value="easy"
-                class="hidden peer"
-              />
-              <label
-                for="difficultyEasy"
-                class="px-6 py-2 rounded-full bg-orange-50 text-gray-700 font-medium shadow-md hover:bg-orange-300 transition-all cursor-pointer peer-checked:bg-orange-700 peer-checked:text-white"
-              >
-                Easy
-              </label>
-            </div>
-
-            <div>
-              <input
-                type="radio"
-                id="difficultyMedium"
-                name="difficulty"
-                value="medium"
-                class="hidden peer"
-              />
-              <label
-                for="difficultyMedium"
-                class="px-6 py-2 rounded-full bg-orange-50 text-gray-700 font-medium shadow-md hover:bg-orange-300 transition-all cursor-pointer peer-checked:bg-orange-700 peer-checked:text-white"
-              >
-                Medium
-              </label>
-            </div>
-
-            <div>
-              <input
-                type="radio"
-                id="difficultyHard"
-                name="difficulty"
-                value="hard"
-                class="hidden peer"
-              />
-              <label
-                for="difficultyHard"
-                class="px-6 py-2 rounded-full bg-orange-50 text-gray-700 font-medium shadow-md hover:bg-orange-300 transition-all cursor-pointer peer-checked:bg-orange-700 peer-checked:text-white"
-              >
-                Hard
-              </label>
-            </div>
           </div>
 
-          <div id="quizzCategory" class="">
+        </div>
+
+        <!-- Amount slider -->
+        <div class=>
+          <h2 for="questionCount" class="text-[#0b0e44] text-center text-2xl pb-2 font-semibold mb-2">
+            Number of Questions: <span id="questionCountLabel" class="font-bold">10</span>
+          </h2>
+
+          <input
+            id="questionCount"
+            type="range"
+            min="5"
+            max="50"
+            step="5"
+            value="10"
+            class="w-full h-3 rounded-full bg-orange-50 appearance-none cursor-pointer shadow-md transition-all hover:bg-orange-300"
+          />
+        </div>
+
+        <!-- Categories radios -->
+        <div>
+          <h2
+          class="text-[#22234e] text-center text-2xl pb-4 text-gray-800 font-semibold mb-4"
+          >
+            Choose category
+          </h2>
+          <div id="quizCategory" class="flex flex-wrap justify-center gap-8 mb-8">
             <!-- Categories will be dynamically inserted here -->
           </div>
         </div>
+
 
         <!-- Start Button -->
         <div class="mb-8 flex flex-wrap justify-center">
           <button
             id="startBtn"
-  class="w-full sm:w-2/3 md:w-1/2 text-2xl px-6 py-2 rounded-full bg-gradient-to-l from-amber-800 to-amber-600 text-white font-semibold shadow-md hover:opacity-90 transition-all focus:ring-2 focus:ring-purple-400 focus:outline-none"
+            class="w-full sm:w-2/3 md:w-1/2 text-2xl px-6 py-2 rounded-full bg-gradient-to-l from-amber-800 to-amber-600 text-white font-semibold shadow-md hover:opacity-90 transition-all focus:ring-2 focus:ring-purple-400 focus:outline-none"
           >
             Start your quiz
           </button>
@@ -142,6 +164,8 @@
         </h2>
       </section>
 
+
+      <!-- Quiz Section -->
       <section
         id="quizContainer"
         class="flex flex-col justify-center items-center gap-6 hidden width-full max-w-2xl mx-auto min-h-[70vh]"
@@ -153,7 +177,7 @@
           Title of question
         </h2>
         <div
-          class="wrapper flex flex-row flex-wrap justify-center items-center space-x-8"
+          class=" wrapper flex flex-wrap justify-center items-center space-x-8 min-w-[50vw] max-w-full"
         >
           <!-- Question prev -->
           <div class="space-x-8">
@@ -161,7 +185,7 @@
             <button
               id="prevQuestionBtn"
               onClick=""
-              class="rounded-full bg-white text-5xl text-white text-gray-500 hover:text-indigo-600 transition p"
+              class="hidden md:block rounded-full bg-white text-5xl text-white text-gray-500 hover:text-orange-600 hover:scale-110 transition p"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +193,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="2"
                 stroke="currentColor"
-                class="w-8 h-8 text-gray-500 hover:text-indigo-600 transition"
+                class="w-8 h-8 text-gray-500 hover:text-orange-600 transition"
               >
                 <path
                   stroke-linecap="round"
@@ -180,7 +204,7 @@
             </button>
           </div>
           <!-- Zone réponses -->
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-2 gap-6 flex-grow justify-center items-center max-w-[80vw] ">
             <button
               id="questionAnswerA"
               class="hover:scale-110 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-orange-200 transition duration-200 ease-out"
@@ -210,7 +234,7 @@
           <div>
             <button
               id="nextQuestionBtn"
-              class="bg-white rounded-full text-white text-gray-500 hover:text-indigo-600 transition"
+              class="hidden md:block bg-white rounded-full text-white text-gray-500 hover:text-orange-600 hover:scale-110 transition"
               onclick=""
             >
               <svg
@@ -219,7 +243,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="2"
                 stroke="currentColor"
-                class="w-8 h-8 text-gray-500 hover:text-indigo-600 transition"
+                class="w-8 h-8 text-gray-500 hover:text-orange-600 transition"
               >
                 <path
                   stroke-linecap="round"
@@ -230,7 +254,28 @@
             </button>
           </div>
         </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full">
+          <!-- Label avec question courante / total -->
+          <label for="quizProgressBar" class="block text-center font-semibold mb-2">
+            Question <span id="currentQuestionNumber">1</span> / <span id="totalQuestions">10</span>
+          </label>
+
+          <!-- Barre de progression style slider -->
+          <div class="w-full h-3 rounded-full bg-orange-50 shadow-md overflow-hidden">
+            <div
+              id="quizProgressBar"
+              class="h-3 bg-orange-500 rounded-full transition-all"
+              style="width: 10%;"
+            ></div>
+          </div>
+        </div>
+
+
+
       </section>
+
 
       <div>
         <h2
@@ -241,12 +286,8 @@
         </h2>
       </div>
 
-      <!-- Error Message -->
-      <div
-        id="error"
-        class="hidden bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg max-w-2xl mx-auto mb-8"
-      ></div>
     </main>
+
     <!-- Scripts -->
     <script type="module" src="./js/app.js"></script>
   </body>
