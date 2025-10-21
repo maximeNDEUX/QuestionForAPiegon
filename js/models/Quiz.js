@@ -2,6 +2,8 @@
 
 import { Question } from "./Question.js";
 
+// Hello refactor
+
 export class Quiz {
     constructor({ questions = [], difficulty = "all", category = "all" }) {
         this.questions = questions; // Tableau d'objets Question
